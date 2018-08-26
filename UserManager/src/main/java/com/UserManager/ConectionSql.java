@@ -2,8 +2,6 @@ package com.UserManager;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 
 public class ConectionSql {
     private String user,password;
@@ -14,27 +12,21 @@ public class ConectionSql {
         this.password = password;
     }
     
-    public boolean isConnected() {
+    public Connection Connect() {
         try{
-            System.out.println("verifcando datos ");
-            if (Connect().isClosed()) {
-                System.out.println("La base de datos esta apagada");
-                return false;
-            }
+            return myConnection= DriverManager.getConnection("jdbc:mysql://localhost:3306/users",this.user,this.password);
         }catch (Exception e) {
             System.out.println("No se pudo estableder coneccion " + e.getMessage());
             e.getStackTrace();
         }
-        return true;
+        return null;
     }
-    
-    public Connection Connect() {
+
+    public void ExitConnection(){
         try {
-            System.out.println("coneccion establesida ");
-            return myConnection = DriverManager.getConnection("jdbc:mysql://localhost:3306/USUARIO",this.user,this.password);
-        }catch (Exception e) {
-            System.out.println("Error no coneccion no establecida");
+            myConnection.close();
+        } catch (Exception e) {
+            System.out.println("error en "+e.getMessage());
         }
-        return myConnection;
     }
 }
