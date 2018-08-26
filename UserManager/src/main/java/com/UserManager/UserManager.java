@@ -1,139 +1,115 @@
 package com.UserManager;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.Statement;
+import java.sql.*;
+import java.util.ArrayList;
 
 public class UserManager {
-    ConectionSql conn = null;
-    Statement declaración = null;
-    PreparedStatement miSentencia = null;
-    ResultSet resultado = null;
-    private String buscarApp;
     
-    public UserManager(ConectionSql conn){
-        this.conn = conn;
+    private ConectionSql connectSql = null;
+    private Connection conection;
+    private PreparedStatement preparedStatement = null;
+    private ResultSet resultSet = null;
+    private ResultSetMetaData rsultado;
+    private ArrayList<Usuario> lista = null;
+    private String[]etiquetas;
+    private String consulta = null;
+    
+    
+    public UserManager(ConectionSql connectSql) {
+        this.connectSql=connectSql;
     }
     
-    public PreparedStatement ConnectedQueryPrepared(String consulta){
-        conn.isConnected();
-            try {
-                System.out.println("coneccion establecida");
-                return  miSentencia = conn.Connect().prepareStatement(consulta);
-            } catch (Exception e) {
-                System.out.println("Error en la consulta!"+e.getMessage());
+    //este metodo es para mantener una coneccion con la ruta a la base de datos!
+    public void conectionSql(){
+        conection = connectSql.Connect();
+    }
+    
+    //el metodo cierra coneccion con la coneccion sql
+    
+    public void setConsultaSQL(String consulta) {
+        this.consulta = consulta;
+    }
+    
+    //el metodo da ordenes consultas a la ase de datos
+    public void Consultar() {
+        try {
+            conectionSql();
+            if (preparedStatement!= null) {
+                preparedStatement = conection.prepareStatement(consulta);
             }
-        return miSentencia; 
-    }
-    
-    public ResultSet PreparedStatementQuery(String buscarApp){
-        try {
-            System.out.println("verifcando datos ");
-            ConnectedQueryPrepared("select cargo, nombre, apellido, sueldo from dato_empleado where apellido=?");
-            miSentencia.setString(1, buscarApp);
-            return resultado = miSentencia.executeQuery();
-        } catch (Exception e) {
-            System.out.println("Error en respuesta Busqueda! "+e.getMessage());
-        }
-        return resultado;
-    }
-    
-    public void ShowSearchUser(String dato) {
-        int i=0;
-        try {
-            System.out.println("datos enlasados ");
-            PreparedStatementQuery(dato);
-            while (resultado.next()) {
-                i++;
-                System.out.println("Cargo: "+resultado.getString(1)+" Nombre: "+resultado.getString(2)+" Apellido: "+resultado.getString(3)+" Salario: "+resultado.getInt(4));
-            }
-            System.out.println("Total hallados: "+i);
-        } catch (Exception e) {
-            System.out.println("Error en la coneccion..."+e.getMessage());
-        }
-    }
-    
-    //este metodo uetra todos los usuarios ojo al charque
-    public void ShowUsers(){
-        try {
-            ConnectWithAllUsers();
-            ExecuteConnectionQuery("select * from dato_empleado");
-            System.out.println("query completado actualisando datos");
-            while(resultado.next()){
-                String id_usuario = resultado.getString(1);
-                String cargo = resultado.getString(2);
-                String nombre = resultado.getString(3);
-                String apellido = resultado.getString(4);
-                String sueldo = resultado.getString(5);
-                System.out.println("ID usuario: "+id_usuario+"\t Cargo: "+cargo+"\tNombre: "+nombre+"\tApellido: "+apellido+"\tSueldo: "+sueldo);
-                System.out.println("");
+            else{
+                preparedStatement = conection.prepareStatement(consulta);
             }
         } catch (Exception e) {
-            System.out.println("error en la coneccion usuarios");
+            System.out.println("error en: "+e.getMessage());
         }
     }
     
-    // este metodo solo es usable para querys preparadas
-    public Statement ConnectWithAllUsers() {
+    //el metodo cierra la ruta que hay entre las consultas y java
+    public void ExitStatements() {
         try {
-            System.out.println("coversion notable ");
-            return declaración = conn.Connect().createStatement();
+            preparedStatement.close();
         } catch (Exception e) {
-            System.out.println("error en el metodo ConnectWithAllUsers()");
+            System.out.println("error en el siere consultas!"+e.getMessage());
         }
-        return declaración;
     }
     
-    public ResultSet ExecuteConnectionQuery(String query) {
+    //el metodo ejecuta la consulta establesida
+    public void EjecutarConsulta() {
         try {
-            return resultado = ConnectWithAllUsers().executeQuery(query);
+            Consultar();
+            this.resultSet = preparedStatement.executeQuery();
         } catch (Exception e) {
-            System.out.println("Error en las consultas."+e.getMessage());
+            System.out.println("error en: "+e.getMessage());
         }
-        return resultado;
     }
     
-    public void AddUser(String id_usuario,String cargo,String nombre,String app,int salario) {
+    //el metodo cierra coneccion con las consultas hechas a la base de datos
+    public void ExitConection(){
         try {
-            ConnectedQueryPrepared("INSERT INTO dato_empleado"
-                + " VALUES"
-                + "(?,?,?,?,?)");
-            miSentencia.setString(1, id_usuario);
-            miSentencia.setString(2, cargo);
-            miSentencia.setString(3, nombre);
-            miSentencia.setString(4, app);
-            miSentencia.setInt(5, salario);
-            miSentencia.executeUpdate();
-            System.out.println("usuario guardado con exito");            
+            resultSet.close();
+            preparedStatement.close();
+            conection.close();
         } catch (Exception e) {
-            System.out.println("error en la adicion de usuarios"+e.getMessage());
+            System.out.println("erro en el sierre "+e.getMessage());
         }
-    } 
+    }
     
-    public int RemoveUser(String deleteUser){
+    //el metodo lista los resultados obtenidos 
+    public ArrayList<Usuario> ListarResultado() {     
         try {
-            ConnectedQueryPrepared("DELETE FROM dato_empleado where id_usuario=?");
-            miSentencia.setString(1, deleteUser);
-            System.out.println("Eliminado con exito");
-            return miSentencia.executeUpdate();
+            EjecutarConsulta();
+            lista = new ArrayList<>();
+            while (this.resultSet.next()) {
+                lista.add(new Usuario(this.resultSet.getInt("id_user"),this.resultSet.getString("nombre"),
+                this.resultSet.getString("apellido"),this.resultSet.getInt("edad"),this.resultSet.getInt("telefono")));
+            }
+            ExitConection();
+            return lista;
         } catch (Exception e) {
-            System.out.println("error en la eliminacion del usuario"+e.getMessage());
+            System.out.println(" error en: "+e.getLocalizedMessage());
         }
-        return 0;
+        return lista;
     }
-    public void EditUser(String id_usuarioEdit,String id_usuario,String cargo,String nombre,String app,int salario){
-        ConnectedQueryPrepared("UPDATE dato_empleado SET id_usuario= ?, cargo= ?, nombre= ?, apellido= ?, sueldo= ? WHERE id_usuario= ?");
+    
+    //el metodo muestra los nombres de campo en la base de datos
+    public String[] ListarEtiquetas() {         
         try {
-            miSentencia.setString(1, id_usuario);
-            miSentencia.setString(2, cargo);
-            miSentencia.setString(3, nombre);
-            miSentencia.setString(4, app);
-            miSentencia.setInt(5, salario);
-            miSentencia.setString(6, id_usuarioEdit);
-            miSentencia.executeUpdate();
-            System.out.println("usuario guardado con exito");
+            EjecutarConsulta();
+            resultSet.getMetaData();
+            rsultado = resultSet.getMetaData();
+            etiquetas= new String[rsultado.getColumnCount()];
+            etiquetas[0] = rsultado.getColumnName(1);
+            etiquetas[1] = rsultado.getColumnName(2);
+            etiquetas[2] = rsultado.getColumnName(3);
+            etiquetas[3] = rsultado.getColumnName(4);
+            etiquetas[4] = rsultado.getColumnName(5);
+            ExitConection();
+            return etiquetas;
         } catch (Exception e) {
-            System.out.println("error en la adicion de usuarios"+e.getMessage());
+            System.out.println(" error en aqui: "+e.getLocalizedMessage());
         }
+        return null;
     }
+    
 }
