@@ -16,13 +16,13 @@ public class ConectionSql {
     
     public boolean isConnected() {
         try{
-            System.out.println("verifcando datos ");
+            System.out.println("Checking data");
             if (Connect().isClosed()) {
-                System.out.println("La base de datos esta apagada");
+                System.out.println("The database is turned off");
                 return false;
             }
         }catch (Exception e) {
-            System.out.println("No se pudo estableder coneccion " + e.getMessage());
+            System.out.println("Unable to establish connection " + e.getMessage());
             e.getStackTrace();
         }
         return true;
@@ -30,10 +30,10 @@ public class ConectionSql {
     
     public Connection Connect() {
         try {
-            System.out.println("coneccion establesida ");
+            System.out.println("Stable connection");
             return myConnection = DriverManager.getConnection("jdbc:mysql://localhost:3306/USUARIO",this.user,this.password);
         }catch (Exception e) {
-            System.out.println("Error no coneccion no establecida");
+            System.out.println("Connection error");
         }
         return myConnection;
     }
