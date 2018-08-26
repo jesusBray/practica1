@@ -1,9 +1,6 @@
 package com.UserManager;
 
-import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileWriter;
-import java.io.InputStream;
 import java.util.Properties;
 
 public class DBConfig {
