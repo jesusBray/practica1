@@ -34,7 +34,12 @@ public class UserManager {
     public void Consultar() {
         try {
             conectionSql();
+            if (preparedStatement!= null) {
                 preparedStatement = conection.prepareStatement(consulta);
+            }
+            else{
+                preparedStatement = conection.prepareStatement(consulta);
+            }
         } catch (Exception e) {
             System.out.println("error en: "+e.getMessage());
         }
@@ -102,7 +107,7 @@ public class UserManager {
             ExitConection();
             return etiquetas;
         } catch (Exception e) {
-            System.out.println(" error en: "+e.getLocalizedMessage());
+            System.out.println(" error en aqui: "+e.getLocalizedMessage());
         }
         return null;
     }
