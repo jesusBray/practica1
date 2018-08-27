@@ -2,7 +2,7 @@ package com.UserManager;
 
 import javax.swing.JOptionPane;
 
-public class characterChecker {
+public class CharacterChecker {
     
     public boolean CheckString(String date){
         for (int i = 0; i < date.length(); i++) {
