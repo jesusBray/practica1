@@ -6,6 +6,7 @@ import java.util.ArrayList;
 public class UserManager {
     
     private ConectionSql connectSql = null;
+
     private Connection conection;
     private PreparedStatement preparedStatement = null;
     private ResultSet resultSet = null;
@@ -39,10 +40,29 @@ public class UserManager {
             }
             else{
                 preparedStatement = conection.prepareStatement(consulta);
+
+    private PreparedStatement preparedStatement = null;
+    private ResultSet resultSet = null;
+    private ArrayList<Usuario> lista = null;
+    
+    //este metodo es para mantener una coneccion con la ruta a la base de datos!
+    public UserManager(ConectionSql connectSql) {
+        this.connectSql=connectSql;
+    }
+
+    //el metodo da ordenes consultas a la ase de datos
+    public PreparedStatement Consultar(String consulta) {
+        try {
+            if (connectSql.Connect() != null) {
+                return preparedStatement = connectSql.Connect().prepareStatement(consulta);
+
             }
         } catch (Exception e) {
             System.out.println("error en: "+e.getMessage());
         }
+
+        return preparedStatement;
+
     }
     
     //el metodo cierra la ruta que hay entre las consultas y java
@@ -57,11 +77,15 @@ public class UserManager {
     //el metodo ejecuta la consulta establesida
     public void EjecutarConsulta() {
         try {
+
             Consultar();
+
+
             this.resultSet = preparedStatement.executeQuery();
         } catch (Exception e) {
             System.out.println("error en: "+e.getMessage());
         }
+
     }
     
     //el metodo cierra coneccion con las consultas hechas a la base de datos
@@ -80,17 +104,31 @@ public class UserManager {
         try {
             EjecutarConsulta();
             lista = new ArrayList<>();
+
+        
+    }
+
+    //el metodo lista los resultados obtenidos 
+    public ArrayList<Usuario> ListarResultado() { 
+    
+        try {
+            lista = new ArrayList<Usuario>();
+
             while (this.resultSet.next()) {
                 lista.add(new Usuario(this.resultSet.getInt("id_user"),this.resultSet.getString("nombre"),
                 this.resultSet.getString("apellido"),this.resultSet.getInt("edad"),this.resultSet.getInt("telefono")));
             }
+
             ExitConection();
+
+
             return lista;
         } catch (Exception e) {
             System.out.println(" error en: "+e.getLocalizedMessage());
         }
         return lista;
     }
+
     
     //el metodo muestra los nombres de campo en la base de datos
     public String[] ListarEtiquetas() {         
@@ -112,4 +150,19 @@ public class UserManager {
         return null;
     }
     
+
+
+    public ResultSet getResultset() {
+        return resultSet;
+    }
+    
+    //el metodo imprime los datos obtenidos en la lista 
+    public void InprimirLista(){
+        for (Usuario usuario : lista) {
+            //System.out.println(+.VerInfo());
+        }
+    }
+    
+    
+
 }

@@ -1,3 +1,4 @@
+
 package com.UserManager;
 
 public class Usuario {
@@ -7,6 +8,15 @@ public class Usuario {
     
     public Usuario(){}
     
+
+
+package com.UserManager;
+
+public class Usuario {
+    private int id_user,edad,telefono;
+    private String nombre,apellido;
+
+
     public Usuario(int id_user, String nombre, String apellido, int edad, int telefono) {
         this.id_user = id_user;
         this.nombre = nombre;
@@ -15,12 +25,27 @@ public class Usuario {
         this.telefono = telefono;
     }
     
+
     public int getId_user() {
         return id_user;
     }
 
     public void setId_user(int id_user) {
         this.id_user = id_user;
+
+    public Usuario(String dato1,String dato2,String dato3) {
+        
+    }
+    
+    public Usuario(){}
+    
+    public int getId_usuario() {
+        return id_user;
+    }
+
+    public void setId_usuario(int id_usuario) {
+        this.id_user = id_usuario;
+
     }
 
     public int getEdad() {
@@ -59,4 +84,9 @@ public class Usuario {
         return "ID usuario: "+id_user+"  Nombre: "+nombre+"  Apellido: "+apellido+"  Edad: "+edad+"  Telefono: "+telefono;
     }
 
+
 }
+
+    
+}
+
