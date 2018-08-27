@@ -39,4 +39,7 @@ public class DBConfig {
         return p.getProperty("BDServer");
     }
     
+    public void metodo(){
+        
+    }
 }
