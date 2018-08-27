@@ -55,4 +55,8 @@ public class Usuario {
         this.apellido = apellido;
     }
     
+    public String VerInfo(){
+        return "ID usuario: "+id_user+"  Nombre: "+nombre+"  Apellido: "+apellido+"  Edad: "+edad+"  Telefono: "+telefono;
+    }
+
 }
